@@ -1,0 +1,51 @@
+provider: codex-runtime
+
+providers:
+  codex-runtime:
+    transport: openai
+    model: gpt-5
+    # Keep secrets in the environment, not in config.yaml.
+    apiKeyEnvVar: OPENAI_API_KEY
+  claude-code-runtime:
+    transport: anthropic
+    model: claude-sonnet-4-5
+    # Optional Anthropic-compatible providers can set baseURLEnvVar.
+    # Keep the endpoint value in the environment.
+    # baseURLEnvVar: ANTHROPIC_BASE_URL
+    apiKeyEnvVar: ANTHROPIC_API_KEY
+
+defaultRuntime:
+  provider: codex-runtime
+
+harbor:
+  agentImportPath: harbor_ext.codex_custom:CodexCustom
+  pythonPath: .
+  forceBuild: false
+  delete: true
+  npmRegistry: https://registry.npmjs.org/
+  # Optional: set a mirror only when required by your local network.
+  # npmRegistry: <your-npm-mirror-url>
+  agentSetupTimeoutMultiplier: 5
+  agentKwargs:
+    reasoning_effort: high
+  codex:
+    modelProvider: custom
+    providerName: OpenAI
+    wireApi: responses
+    requiresOpenAIAuth: true
+    modelReasoningEffort: high
+    approvalPolicy: never
+    # Experiments often need to edit files and run commands in task sandboxes.
+    # Tighten this when your task set does not require full filesystem access.
+    sandboxMode: danger-full-access
+  dockerBuild:
+    network: host
+    memory: 4g
+    memorySwap: 6g
+    maxOutputBytes: 10485760
+
+# To run Claude Code instead of Codex, switch provider/defaultRuntime.provider
+# to claude-code-runtime and set:
+#
+# harbor:
+#   agentImportPath: harbor_ext.claude_code_cached:ClaudeCodeCached

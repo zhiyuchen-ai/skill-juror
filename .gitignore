@@ -1,0 +1,8 @@
+node_modules/
+config.yaml
+artifacts/
+runs/
+tmp/
+*.log
+__pycache__/
+*.py[cod]
